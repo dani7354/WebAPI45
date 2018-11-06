@@ -35,7 +35,7 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities/5
-        [HttpGet("{id}/{attractions:bool}")]
+        [HttpGet("{id}/{attractions:bool}", Name = "GetCity")]
         public IActionResult GetCity([FromRoute] int id, [FromQuery] bool attractions=false)
         {
             if (!ModelState.IsValid)
@@ -107,7 +107,7 @@ namespace WebAPI45.Controllers
             _context.Cities.Add(city);
             _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCity", new { city.id }, city);
+            return CreatedAtRoute("GetCity", new { city.id }, city);
         }
 
         // DELETE: api/Cities/5
