@@ -22,15 +22,15 @@ namespace WebAPI45.Controllers
         
         // GET: api/Cities
         [HttpGet("{attractions:bool}")]
-        public IEnumerable<City> GetCities([FromRoute] bool attractions)
+        public IActionResult GetCities([FromRoute] bool attractions)
         {
             if (attractions == true)
             {
-                return _context.Cities.Include(c => c.Attractions);
+                return Ok(_context.Cities.Include(c => c.Attractions));
             }
             else
             {
-                return _context.Cities;
+                return Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }));
             }
         }
         // GET: api/Cities/5
@@ -41,14 +41,14 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-            City city = null;
+            object city = null;
             if (attractions == true)
             {
                 city = _context.Cities.Where(c => c.id == id).Include(c => c.Attractions).SingleOrDefault();
             }
             else
             {
-                city = _context.Cities.Where(c => c.id == id).SingleOrDefault();
+                city = _context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id);
             }
             if (city == null)
             {
@@ -129,5 +129,6 @@ namespace WebAPI45.Controllers
         {
             return _context.Cities.Any(e => e.id == id);
         }
+       
     }
 }
