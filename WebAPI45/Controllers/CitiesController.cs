@@ -21,7 +21,7 @@ namespace WebAPI45.Controllers
         }
         
         // GET: api/Cities
-        [HttpGet("attractions={attractions:bool}")]
+        [HttpGet("{attractions:bool}")]
         public IEnumerable<City> GetCities([FromRoute] bool attractions)
         {
             if (attractions == true)
@@ -35,8 +35,8 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities/5
-        [HttpGet("{id}/attractions={attractions:bool}")]
-        public IActionResult GetCity([FromRoute] int id, [FromQuery] bool attractions)
+        [HttpGet("{id}/{attractions:bool}")]
+        public IActionResult GetCity([FromRoute] int id, [FromQuery] bool attractions=false)
         {
             if (!ModelState.IsValid)
             {
