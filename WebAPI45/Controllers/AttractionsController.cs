@@ -46,7 +46,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-            City city = _context.Cities.Where(c => c.id == cityId).SingleOrDefault();
+            City city = _context.Cities.Where(c => c.id == cityId).Include(c => c.Attractions).SingleOrDefault();
             if (city == null)
             {
                 return NotFound(city);
