@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI45.Model;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -22,7 +23,6 @@ namespace WebAPI45.Controllers
         [HttpGet]
         public  IEnumerable<TouristAttractions> Get()
         {
-
             return _context.touristAttractions;
         }
 
@@ -30,7 +30,7 @@ namespace WebAPI45.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var touristAttractions = _context.touristAttractions.Where(t=>t.id==id).SingleOrDefault();
+            var touristAttractions = _context.touristAttractions.FirstOrDefault(c => c.id == id);
             if (touristAttractions == null)
             {
                 return NotFound(touristAttractions);
@@ -46,8 +46,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-            City city =
-            _context.Cities.Where(c => c.id == cityId).SingleOrDefault();
+            City city = _context.Cities.Where(c => c.id == cityId).SingleOrDefault();
             if (city == null)
             {
                 return NotFound(city);
@@ -56,19 +55,44 @@ namespace WebAPI45.Controllers
             _context.Cities.Update(city);
             _context.SaveChangesAsync();
 
-            return CreatedAtAction("Get", new { id = touristAttraction.id }, touristAttraction);
+            return CreatedAtAction("Get", new { touristAttraction.id }, touristAttraction);
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IActionResult Put([FromRoute]int id, [FromBody]TouristAttractions attraction)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            if (id != attraction.id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(attraction).State = EntityState.Modified;
+            _context.SaveChanges();
+            return NoContent();
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            if (!Exists(id))
+            {
+                return BadRequest();
+            }
+            var attraction = _context.touristAttractions.FirstOrDefault(t => t.id == id);
+            _context.Entry(attraction).State = EntityState.Deleted;
+            _context.SaveChanges();
+
+            return Ok(attraction);
+        }
+
+        private bool Exists(int id)
+        {
+            return _context.touristAttractions.Any(t => t.id == id);
         }
     }
 }

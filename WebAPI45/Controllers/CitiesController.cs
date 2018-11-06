@@ -21,21 +21,9 @@ namespace WebAPI45.Controllers
         }
         
         // GET: api/Cities
-        [HttpGet("{attractions:bool}")]
+        [HttpGet("attractions={attractions:bool}")]
         public IEnumerable<City> GetCities([FromRoute] bool attractions)
         {
-            //_context.Cities.Add(new City()
-            //{
-            //    id = 0,
-            //    name = "Odense",
-            //    description = "H.C. Andersens by",
-            //    Attractions = new List<TouristAttractions>()
-            //    {
-            //        new TouristAttractions() { id=0, name="H.C. Andersens Hus", description="Bygget i 1800 tallet"  },
-            //        new TouristAttractions() { id = 1, name = "The View ved Havnen", description = "Smuk view fra Faizans stue"  }
-            //    }
-            //});
-            //_context.SaveChanges();
             if (attractions == true)
             {
                 return _context.Cities.Include(c => c.Attractions);
@@ -47,8 +35,8 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities/5
-        [HttpGet("{id}/{attractions:bool}")]
-        public IActionResult GetCity([FromRoute] int id, [FromRoute] bool attractions)
+        [HttpGet("{id}/attractions={attractions:bool}")]
+        public IActionResult GetCity([FromRoute] int id, [FromQuery] bool attractions)
         {
             if (!ModelState.IsValid)
             {
@@ -119,7 +107,7 @@ namespace WebAPI45.Controllers
             _context.Cities.Add(city);
             _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCity", new { id = city.id }, city);
+            return CreatedAtAction("GetCity", new { city.id }, city);
         }
 
         // DELETE: api/Cities/5
@@ -130,13 +118,11 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var city = await _context.Cities.FindAsync(id);
             if (city == null)
             {
                 return NotFound();
             }
-
             _context.Cities.Remove(city);
             await _context.SaveChangesAsync();
 
