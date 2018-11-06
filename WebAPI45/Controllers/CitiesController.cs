@@ -33,7 +33,6 @@ namespace WebAPI45.Controllers
                 return _context.Cities;
             }
         }
-
         // GET: api/Cities/5
         [HttpGet("{id}/{attractions:bool}", Name = "GetCity")]
         public IActionResult GetCity([FromRoute] int id, [FromQuery] bool attractions=false)
@@ -51,18 +50,16 @@ namespace WebAPI45.Controllers
             {
                 city = _context.Cities.Where(c => c.id == id).SingleOrDefault();
             }
-
             if (city == null)
             {
                 return NotFound();
             }
-
             return Ok(city);
         }
 
         // PUT: api/Cities/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCity([FromRoute] int id, [FromBody] City city)
+        public IActionResult PutCity([FromRoute] int id, [FromBody] City city)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +75,7 @@ namespace WebAPI45.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -91,7 +88,6 @@ namespace WebAPI45.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -112,19 +108,19 @@ namespace WebAPI45.Controllers
 
         // DELETE: api/Cities/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCity([FromRoute] int id)
+        public IActionResult DeleteCity([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var city = await _context.Cities.FindAsync(id);
+            var city =  _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
             if (city == null)
             {
                 return NotFound();
             }
             _context.Cities.Remove(city);
-            await _context.SaveChangesAsync();
+             _context.SaveChangesAsync();
 
             return Ok(city);
         }
