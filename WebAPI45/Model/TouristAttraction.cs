@@ -1,6 +1,6 @@
 ﻿namespace WebAPI45.Model
 {
-    public class TouristAttractions
+    public class TouristAttraction
     {
         public int id { get; set; }
         public string name { get; set; }

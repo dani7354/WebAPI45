@@ -21,16 +21,16 @@ namespace WebAPI45.Controllers
         }
         // GET: api/<controller>
         [HttpGet]
-        public  IEnumerable<TouristAttractions> Get()
+        public  IActionResult Get()
         {
-            return _context.touristAttractions;
+            return Ok(_context.TouristAttractions);
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var touristAttractions = _context.touristAttractions.FirstOrDefault(c => c.id == id);
+            var touristAttractions = _context.TouristAttractions.FirstOrDefault(c => c.id == id);
             if (touristAttractions == null)
             {
                 return NotFound(touristAttractions);
@@ -39,8 +39,8 @@ namespace WebAPI45.Controllers
         }
 
         // POST api/<controller>
-        [HttpPost("{cityId}")]
-        public IActionResult Post([FromBody] TouristAttractions touristAttraction, [FromRoute]int cityId)
+        [HttpPost("city/{cityId}")]
+        public IActionResult Post([FromBody] TouristAttraction touristAttraction, [FromRoute]int cityId)
         {
             if (ModelState.IsValid == false)
             {
@@ -60,7 +60,7 @@ namespace WebAPI45.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public IActionResult Put([FromRoute]int id, [FromBody]TouristAttractions attraction)
+        public IActionResult Put([FromRoute]int id, [FromBody]TouristAttraction attraction)
         {
             if (!ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest();
             }
-            var attraction = _context.touristAttractions.FirstOrDefault(t => t.id == id);
+            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.id == id);
             _context.Entry(attraction).State = EntityState.Deleted;
             _context.SaveChanges();
 
@@ -92,7 +92,7 @@ namespace WebAPI45.Controllers
 
         private bool Exists(int id)
         {
-            return _context.touristAttractions.Any(t => t.id == id);
+            return _context.TouristAttractions.Any(t => t.id == id);
         }
     }
 }

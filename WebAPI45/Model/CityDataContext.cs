@@ -9,7 +9,7 @@ namespace WebAPI45.Model
     public class CityDataContext : DbContext
     {
         public DbSet<City> Cities { get; set; }
-        public DbSet<TouristAttractions> touristAttractions { get; set; }
+        public DbSet<TouristAttraction> TouristAttractions { get; set; }
         public CityDataContext(DbContextOptions<CityDataContext>options):base(options)
         {
             Database.EnsureCreated();

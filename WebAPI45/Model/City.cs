@@ -11,7 +11,7 @@ namespace WebAPI45.Model
         public string name { get; set; }
         public string description { get; set; }
 
-        public List<TouristAttractions> Attractions { get; set; } 
+        public List<TouristAttraction> Attractions { get; set; } 
 
 
     }
