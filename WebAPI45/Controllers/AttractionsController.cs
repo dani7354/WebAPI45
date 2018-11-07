@@ -46,7 +46,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-            City city = _context.Cities.Where(c => c.id == cityId).Include(c => c.Attractions).SingleOrDefault();
+            var city = _context.Cities.Where(c => c.id == cityId).Include(c => c.Attractions).SingleOrDefault();
             if (city == null)
             {
                 return NotFound(city);
@@ -81,7 +81,7 @@ namespace WebAPI45.Controllers
         {
             if (!Exists(id))
             {
-                return BadRequest();
+                return BadRequest(id);
             }
             var attraction = _context.TouristAttractions.FirstOrDefault(t => t.id == id);
             _context.Entry(attraction).State = EntityState.Deleted;

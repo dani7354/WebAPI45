@@ -110,9 +110,9 @@ namespace WebAPI45.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteCity([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
+            if (!CityExists(id))
             {
-                return BadRequest(ModelState);
+                return BadRequest(id);
             }
             var city =  _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
             if (city == null)
