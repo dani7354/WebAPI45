@@ -31,11 +31,7 @@ namespace WebAPI45.Controllers
         public IActionResult Get(int id)
         {
             var touristAttractions = _context.TouristAttractions.FirstOrDefault(c => c.id == id);
-            if (touristAttractions == null)
-            {
-                return NotFound(touristAttractions);
-            }
-            return Ok(touristAttractions);
+            return touristAttractions == null ? NotFound(touristAttractions) : (IActionResult)Ok(touristAttractions);
         }
 
         // POST api/<controller>

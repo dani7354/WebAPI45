@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI45.Model;
@@ -19,42 +20,27 @@ namespace WebAPI45.Controllers
         {
             _context = context;
         }
-        
+
         // GET: api/Cities
-        [HttpGet("{attractions:bool?}")]
-        public IActionResult GetCities([FromRoute] bool attractions)
+        [HttpGet()]
+        public IActionResult GetCities([FromQuery] bool showAttractions)
         {
-            if (attractions == true)
-            {
-                return Ok(_context.Cities.Include(c => c.Attractions));
-            }
-            else
-            {
-                return Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }));
-            }
+            return showAttractions == true
+                ? Ok(_context.Cities.Include(c => c.Attractions))
+                : Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }));
         }
         // GET: api/Cities/5
-        [HttpGet("{id}/{attractions:bool?}", Name = "GetCity")]
-        public IActionResult GetCity([FromRoute] int id, [FromRoute] bool attractions)
+        [HttpGet("{id}", Name = "GetCity")]
+        public IActionResult GetCity([FromRoute] int id, [FromQuery] bool showAttractions)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            object city = null;
-            if (attractions == true)
-            {
-                city = _context.Cities.Where(c => c.id == id).Include(c => c.Attractions).SingleOrDefault();
-            }
-            else
-            {
-                city = _context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id);
-            }
-            if (city == null)
-            {
-                return NotFound();
-            }
-            return Ok(city);
+            object city = showAttractions == true
+                ? _context.Cities.Where(c => c.id == id).Include(c => c.Attractions).SingleOrDefault()
+                : (object)_context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id);
+            return city == null ? NotFound() : (IActionResult)Ok(city);
         }
 
         // PUT: api/Cities/5
@@ -75,7 +61,7 @@ namespace WebAPI45.Controllers
 
             try
             {
-                 _context.SaveChanges();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -105,6 +91,20 @@ namespace WebAPI45.Controllers
 
             return CreatedAtRoute("GetCity", new { city.id }, city);
         }
+        [HttpPatch("{id}")]
+        public IActionResult PatchCity([FromRoute] int id, [FromBody] JsonPatchDocument<City> cityPatch)
+        {
+            var city = _context.Cities.FirstOrDefault(c => c.id == id);
+            if (city == null)
+            {
+                return BadRequest(id);
+            }
+            cityPatch.ApplyTo(city);
+            _context.Cities.Update(city);
+            _context.SaveChanges();
+            return Ok(city);
+        }
+
 
         // DELETE: api/Cities/5
         [HttpDelete("{id}")]
@@ -114,16 +114,17 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(id);
             }
-            var city =  _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
+            var city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
             if (city == null)
             {
                 return NotFound();
             }
             _context.Cities.Remove(city);
-             _context.SaveChangesAsync();
+            _context.SaveChangesAsync();
 
             return Ok(city);
         }
+
 
         private bool CityExists(int id)
         {

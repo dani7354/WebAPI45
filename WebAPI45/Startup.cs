@@ -29,7 +29,7 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseSqlServer(Configuration.GetValue<string>("CitiesDataContext")));
+            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("Cities"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
