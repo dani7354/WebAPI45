@@ -31,16 +31,16 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("CitiesDB"));
+            services.AddDbContext<CityDataContext>(options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=WebAPI45;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
 
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1" }));
 
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
-                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            .AddXmlSerializerFormatters();
+            
 
         }
 

@@ -12,7 +12,8 @@ using WebAPI45.Model;
 namespace WebAPI45.Controllers
 {
     [Route("api/attractions")]
-    public class AttractionsController : Controller
+    [ApiController]
+    public class AttractionsController : ControllerBase
     {
         readonly CityDataContext _context;
 

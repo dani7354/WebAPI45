@@ -22,7 +22,7 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetCities([FromQuery] bool showAttractions)
         {
             return showAttractions == true
@@ -37,10 +37,17 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-            object city = showAttractions == true
-                ? _context.Cities.Where(c => c.id == id).Include(c => c.Attractions).SingleOrDefault()
-                : (object)_context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id);
-            return city == null ? NotFound() : (IActionResult)Ok(city);
+
+            City city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
+            if (city == null) return BadRequest(id);
+            if(showAttractions == true)
+            {
+                return Ok(city);
+            }
+            else
+            {
+                return Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id));
+            }
         }
 
         // PUT: api/Cities/5
