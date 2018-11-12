@@ -55,18 +55,18 @@ namespace WebAPI45.Controllers
 
         // PUT: api/Cities/5
         [HttpPut("{id}")]
-        public IActionResult PutCity([FromRoute] int id, [FromBody] City city)
+        public IActionResult PutCity([FromRoute] int id, [FromBody] CityDTOwithAttractions cityDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != city.Id)
+            if (id != cityDTO.Id)
             {
-                return BadRequest();
+                return BadRequest(id);
             }
-
+            City city = _mapper.Map<City>(cityDTO);
             _context.Entry(city).State = EntityState.Modified;
 
             try

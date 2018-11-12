@@ -62,17 +62,18 @@ namespace WebAPI45.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public IActionResult Put([FromRoute]int id, [FromBody]TouristAttraction attraction)
+        public IActionResult Put([FromRoute]int id, [FromBody]TouristAttractionDTO attractionDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            if (id != attraction.Id)
+            if (id != attractionDto.Id)
             {
                 return BadRequest();
             }
-            _context.Entry(attraction).State = EntityState.Modified;
+            var touristAttraction = _mapper.Map<TouristAttraction>(attractionDto);
+            _context.Entry(touristAttraction).State = EntityState.Modified;
             _context.SaveChanges();
             return NoContent();
         }
@@ -90,8 +91,6 @@ namespace WebAPI45.Controllers
             _context.SaveChanges();
             return Ok(attraction);
         }
-
-
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -106,7 +105,6 @@ namespace WebAPI45.Controllers
 
             return Ok(attraction);
         }
-
         private bool Exists(int id)
         {
             return _context.TouristAttractions.Any(t => t.Id == id);
