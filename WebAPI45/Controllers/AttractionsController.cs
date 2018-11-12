@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI45.Model;
@@ -13,7 +14,7 @@ namespace WebAPI45.Controllers
     [Route("api/attractions")]
     public class AttractionsController : Controller
     {
-        private readonly CityDataContext _context;
+        readonly CityDataContext _context;
 
         public AttractionsController(CityDataContext context)
         {
@@ -70,6 +71,21 @@ namespace WebAPI45.Controllers
             _context.SaveChanges();
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public IActionResult PatchAttraction([FromRoute] int id, [FromBody] JsonPatchDocument<TouristAttraction> attractionPatch)
+        {
+            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.id == id);
+            if (attraction == null)
+            {
+                return BadRequest(id);
+            }
+            attractionPatch.ApplyTo(attraction);
+            _context.TouristAttractions.Update(attraction);
+            _context.SaveChanges();
+            return Ok(attraction);
+        }
+
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]

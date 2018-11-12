@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using WebAPI45.Model;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace WebAPI45
 {
@@ -30,11 +31,17 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseSqlServer(Configuration.GetValue<string>("CitiesDataContext")));
+            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("CitiesDB"));
 
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1" }));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
