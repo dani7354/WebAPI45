@@ -12,5 +12,9 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebAPI45\WebAPI45.csproj">
+    </ProjectReference>
+  </ItemGroup>
 
 </Project>

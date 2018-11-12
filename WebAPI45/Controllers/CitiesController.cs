@@ -61,29 +61,28 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             if (id != cityDTO.Id)
             {
                 return BadRequest(id);
             }
-            City city = _mapper.Map<City>(cityDTO);
-            _context.Entry(city).State = EntityState.Modified;
 
-            try
+            City city = _mapper.Map<City>(cityDTO);
+            using(var tran = _context.Database.BeginTransaction())
             {
-                _context.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CityExists(id))
+                try
                 {
-                    return NotFound();
+                    _context.Entry(city).State = EntityState.Modified;
+                    _context.SaveChanges();
+                    tran.Commit();
                 }
-                else
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    throw;
+                    tran.Rollback();
+
+                    return !CityExists(id) ? NotFound(id) : StatusCode(412, ex.Message);
                 }
             }
+
             return NoContent();
         }
 
@@ -110,9 +109,22 @@ namespace WebAPI45.Controllers
                 return BadRequest(id);
             }
             cityPatch.ApplyTo(city);
-            _context.Cities.Update(city);
-            _context.SaveChanges();
-            return Ok(city);
+            using (var tran = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Cities.Update(city);
+                    _context.SaveChanges();
+                    tran.Commit();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    tran.Rollback();
+                    return !CityExists(id) ? NotFound(id) : StatusCode(412, ex.Message);
+                }
+            }
+     
+            return NoContent();
         }
 
 
@@ -132,7 +144,7 @@ namespace WebAPI45.Controllers
             _context.Cities.Remove(city);
             _context.SaveChangesAsync();
 
-            return Ok(city);
+            return NoContent();
         }
 
 

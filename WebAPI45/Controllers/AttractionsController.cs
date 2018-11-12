@@ -73,8 +73,20 @@ namespace WebAPI45.Controllers
                 return BadRequest();
             }
             var touristAttraction = _mapper.Map<TouristAttraction>(attractionDto);
-            _context.Entry(touristAttraction).State = EntityState.Modified;
-            _context.SaveChanges();
+
+            using(var tran = _context.Database.BeginTransaction()){
+                try
+                {
+                    _context.Entry(touristAttraction).State = EntityState.Modified;
+                    _context.SaveChanges();
+                    tran.Commit();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    tran.Rollback();
+                    return !Exists(id) ? NotFound(id) : StatusCode(412, ex.Message);
+                }
+            }
             return NoContent();
         }
 
@@ -87,9 +99,20 @@ namespace WebAPI45.Controllers
                 return BadRequest(id);
             }
             attractionPatch.ApplyTo(attraction);
-            _context.TouristAttractions.Update(attraction);
-            _context.SaveChanges();
-            return Ok(attraction);
+            using(var tran = _context.Database.BeginTransaction()){
+                try
+                {
+                    _context.Entry(attraction).State = EntityState.Modified;
+                    _context.SaveChanges();
+                    tran.Commit();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    tran.Rollback();
+                    return !Exists(id) ? NotFound(id) : StatusCode(412, ex.Message);
+                }
+            }
+            return NoContent();
         }
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
@@ -103,7 +126,7 @@ namespace WebAPI45.Controllers
             _context.Entry(attraction).State = EntityState.Deleted;
             _context.SaveChanges();
 
-            return Ok(attraction);
+            return NoContent();
         }
         private bool Exists(int id)
         {
