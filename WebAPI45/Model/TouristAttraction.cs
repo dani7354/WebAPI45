@@ -1,9 +1,12 @@
-﻿namespace WebAPI45.Model
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebAPI45.Model
 {
     public class TouristAttraction
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        [Key]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

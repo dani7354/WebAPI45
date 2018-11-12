@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,44 +17,47 @@ namespace WebAPI45.Controllers
     public class AttractionsController : ControllerBase
     {
         readonly CityDataContext _context;
+        readonly IMapper _mapper;
 
-        public AttractionsController(CityDataContext context)
+        public AttractionsController(CityDataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         // GET: api/<controller>
         [HttpGet]
         public  IActionResult Get()
         {
-            return Ok(_context.TouristAttractions);
+            return Ok(_context.TouristAttractions.Select(t => _mapper.Map<TouristAttractionDTO>(t)));
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var touristAttractions = _context.TouristAttractions.FirstOrDefault(c => c.id == id);
-            return touristAttractions == null ? NotFound(touristAttractions) : (IActionResult)Ok(touristAttractions);
+            var touristAttraction = _context.TouristAttractions.FirstOrDefault(c => c.Id == id);
+            return touristAttraction == null ? NotFound(id) : (IActionResult)Ok(_mapper.Map<TouristAttractionDTO>(touristAttraction));
         }
 
         // POST api/<controller>
         [HttpPost("city/{cityId}")]
-        public IActionResult Post([FromBody] TouristAttraction touristAttraction, [FromRoute]int cityId)
+        public IActionResult Post([FromBody] TouristAttractionDTO touristAttraction, [FromRoute]int cityId)
         {
             if (ModelState.IsValid == false)
             {
                 return BadRequest(ModelState);
             }
-            var city = _context.Cities.Where(c => c.id == cityId).Include(c => c.Attractions).SingleOrDefault();
+            var city = _context.Cities.Where(c => c.Id == cityId).Include(c => c.Attractions).SingleOrDefault();
             if (city == null)
             {
                 return NotFound(city);
             }
-            city.Attractions.Add(touristAttraction);
+            TouristAttraction attraction = _mapper.Map<TouristAttraction>(touristAttraction);
+            city.Attractions.Add(attraction);
             _context.Cities.Update(city);
             _context.SaveChangesAsync();
 
-            return CreatedAtAction("Get", new { touristAttraction.id }, touristAttraction);
+            return CreatedAtAction("Get", new { touristAttraction.Id }, touristAttraction);
         }
 
         // PUT api/<controller>/5
@@ -64,7 +68,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest();
             }
-            if (id != attraction.id)
+            if (id != attraction.Id)
             {
                 return BadRequest();
             }
@@ -76,7 +80,7 @@ namespace WebAPI45.Controllers
         [HttpPatch("{id}")]
         public IActionResult PatchAttraction([FromRoute] int id, [FromBody] JsonPatchDocument<TouristAttraction> attractionPatch)
         {
-            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.id == id);
+            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.Id == id);
             if (attraction == null)
             {
                 return BadRequest(id);
@@ -96,7 +100,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(id);
             }
-            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.id == id);
+            var attraction = _context.TouristAttractions.FirstOrDefault(t => t.Id == id);
             _context.Entry(attraction).State = EntityState.Deleted;
             _context.SaveChanges();
 
@@ -105,7 +109,7 @@ namespace WebAPI45.Controllers
 
         private bool Exists(int id)
         {
-            return _context.TouristAttractions.Any(t => t.id == id);
+            return _context.TouristAttractions.Any(t => t.Id == id);
         }
     }
 }

@@ -13,6 +13,7 @@ using WebAPI45.Model;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using AutoMapper;
 
 namespace WebAPI45
 {
@@ -32,6 +33,15 @@ namespace WebAPI45
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CityDataContext>(options => options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=WebAPI45;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
+
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<CityDTOnoAttractions, City>();
+                cfg.CreateMap<CityDTOwithAttractions, City>();
+                cfg.CreateMap<TouristAttractionDTO, TouristAttraction>();
+            });
+            var dtoMapper = mapperConfig.CreateMapper();
+            services.AddSingleton(dtoMapper);
 
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1" }));
 

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace WebAPI45.Model
 {
-    public class City
+    public class CityDTOwithAttractions
     {
-        [Key]
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Description { get; set; }
-        public List<TouristAttraction> Attractions { get; set; } 
-
+        public List<TouristAttraction> Attractions { get; set; }
 
     }
 }

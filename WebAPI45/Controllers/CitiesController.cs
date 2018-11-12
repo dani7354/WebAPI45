@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,13 @@ namespace WebAPI45.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
-        private readonly CityDataContext _context;
+        readonly CityDataContext _context;
+        readonly IMapper _mapper;
 
-        public CitiesController(CityDataContext context)
+        public CitiesController(CityDataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Cities
@@ -26,8 +29,8 @@ namespace WebAPI45.Controllers
         public IActionResult GetCities([FromQuery] bool showAttractions)
         {
             return showAttractions == true
-                ? Ok(_context.Cities.Include(c => c.Attractions))
-                : Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }));
+                ? Ok(_context.Cities.Include(c => c.Attractions).Select(c => _mapper.Map<CityDTOwithAttractions>(c)))
+                : Ok(_context.Cities.Select(c => _mapper.Map<CityDTOnoAttractions>(c)));
         }
         // GET: api/Cities/5
         [HttpGet("{id}", Name = "GetCity")]
@@ -38,15 +41,15 @@ namespace WebAPI45.Controllers
                 return BadRequest(ModelState);
             }
 
-            City city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
+            City city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.Id == id);
             if (city == null) return BadRequest(id);
             if(showAttractions == true)
             {
-                return Ok(city);
+                return Ok(_mapper.Map<CityDTOwithAttractions>(city));
             }
             else
             {
-                return Ok(_context.Cities.Select(c => new { c.id, c.name, c.description }).FirstOrDefault(c => c.id == id));
+                return Ok(_mapper.Map<CityDTOnoAttractions>(city));
             }
         }
 
@@ -59,7 +62,7 @@ namespace WebAPI45.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != city.id)
+            if (id != city.Id)
             {
                 return BadRequest();
             }
@@ -96,12 +99,12 @@ namespace WebAPI45.Controllers
             _context.Cities.Add(city);
             _context.SaveChangesAsync();
 
-            return CreatedAtRoute("GetCity", new { city.id }, city);
+            return CreatedAtRoute("GetCity", new { city.Id }, city);
         }
         [HttpPatch("{id}")]
         public IActionResult PatchCity([FromRoute] int id, [FromBody] JsonPatchDocument<City> cityPatch)
         {
-            var city = _context.Cities.FirstOrDefault(c => c.id == id);
+            var city = _context.Cities.FirstOrDefault(c => c.Id == id);
             if (city == null)
             {
                 return BadRequest(id);
@@ -121,7 +124,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(id);
             }
-            var city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.id == id);
+            var city = _context.Cities.Include(c => c.Attractions).FirstOrDefault(c => c.Id == id);
             if (city == null)
             {
                 return NotFound();
@@ -135,7 +138,7 @@ namespace WebAPI45.Controllers
 
         private bool CityExists(int id)
         {
-            return _context.Cities.Any(e => e.id == id);
+            return _context.Cities.Any(e => e.Id == id);
         }
        
     }
