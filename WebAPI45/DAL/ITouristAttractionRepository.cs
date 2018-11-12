@@ -1,6 +1,10 @@
-﻿namespace WebAPI45.DAL
+﻿using WebAPI45.Model;
+
+namespace WebAPI45.DAL
 {
-    public interface ITouristAttractionRepository
+    public interface ITouristAttractionRepository : IRepository<TouristAttraction>
     {
+        void Update(TouristAttraction attraction);
+        bool Exists(int id);
     }
 }

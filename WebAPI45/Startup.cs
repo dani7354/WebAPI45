@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebAPI45.Model;
+using WebAPI45.DAL;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
@@ -42,6 +43,7 @@ namespace WebAPI45
             var dtoMapper = mapperConfig.CreateMapper();
             services.AddSingleton(dtoMapper);
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1" }));
 
             services.AddMvc(options =>

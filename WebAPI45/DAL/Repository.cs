@@ -9,51 +9,51 @@ namespace WebAPI45.DAL
     public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly DbContext Context;
-        private readonly DbSet<T> _DbSet;
+        private readonly DbSet<T> _entities;
         public Repository(DbContext context)
         {
             Context = context;
-            _DbSet = Context.Set<T>();
+            _entities = Context.Set<T>();
         }
 
         public void Add(T entity)
         {
-            _DbSet.Add(entity);
+            _entities.Add(entity);
         }
 
         public void AddRange(IEnumerable<T> entities)
         {
-            _DbSet.AddRange(entities);
+            _entities.AddRange(entities);
         }
 
         public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
         {
-            return _DbSet.Where(predicate);
+            return _entities.Where(predicate);
         }
 
         public T Get(int id)
         {
-            return _DbSet.Find(id);
+            return _entities.Find(id);
         }
 
         public IEnumerable<T> GetAll()
         {
-            return _DbSet.ToList();
+            return _entities.ToList();
         }
 
         public void Remove(T entity)
         {
-            _DbSet.Remove(entity);
+            _entities.Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<T> entities)
         {
-            _DbSet.RemoveRange(entities);
+            _entities.RemoveRange(entities);
         }
 
         public T SingleOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return _DbSet.SingleOrDefault(predicate);
+            return _entities.SingleOrDefault(predicate);
         }
     }
 }
