@@ -111,6 +111,9 @@ namespace APITest.Mock
 
         public void Update(TouristAttraction attraction)
         {
+            var oldatt = cities.SelectMany(c => c.Attractions).FirstOrDefault(t => t.Id == attraction.Id);
+            oldatt.Name = attraction.Name;
+            oldatt.Description = attraction.Name;
 
         }
 

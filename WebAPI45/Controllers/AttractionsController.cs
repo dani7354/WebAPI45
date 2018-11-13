@@ -51,7 +51,7 @@ namespace WebAPI45.Controllers
             var city = _unitOfWork.Cities.GetCityWithTouristAttractions(cityId);
             if (city == null)
             {
-                return NotFound(city);
+                return BadRequest(city);
             }
             TouristAttraction attraction = _mapper.Map<TouristAttraction>(touristAttraction);
             city.Attractions.Add(attraction);
