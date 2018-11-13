@@ -32,7 +32,7 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("webAPI"));
+            services.AddDbContext<CityDataContext>(options => options.UseSqlite("/Users/dsp/Documents/WebAPI45/WebAPI45/webAPI.db"));
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
