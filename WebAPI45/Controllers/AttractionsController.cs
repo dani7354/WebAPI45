@@ -65,11 +65,7 @@ namespace WebAPI45.Controllers
         [HttpPut("{id}")]
         public IActionResult Put([FromRoute]int id, [FromBody]TouristAttractionDTO attractionDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            if (id != attractionDto.Id)
+            if (!ModelState.IsValid || id != attractionDto.Id)
             {
                 return BadRequest();
             }
