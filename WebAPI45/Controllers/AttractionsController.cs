@@ -39,6 +39,16 @@ namespace WebAPI45.Controllers
             var touristAttraction = _unitOfWork.TouristAttractions.Get(id);
             return touristAttraction == null ? NotFound(id) : (IActionResult)Ok(_mapper.Map<TouristAttractionDTO>(touristAttraction));
         }
+        [HttpGet("~/api/cities/{cityId}/attractions")]
+        public IActionResult GetAttractionsByCityId(int cityId)
+        {
+            var city = _unitOfWork.Cities.GetCityWithTouristAttractions(cityId);
+            if (city == null) return NotFound(cityId);
+
+            var attractions = city.Attractions.Select(t => _mapper.Map<TouristAttractionDTO>(t));
+            if ( attractions == null) return NotFound(cityId);
+            return Ok(attractions);
+        }
 
         // POST api/<controller>
         [HttpPost("city/{cityId}")]

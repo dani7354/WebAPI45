@@ -18,13 +18,8 @@ namespace APITest
         readonly TestData _testData;
         public AttractionsControllerShould()
         {
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<CityDTOnoAttractions, City>();
-                cfg.CreateMap<CityDTOwithAttractions, City>();
-                cfg.CreateMap<TouristAttractionDTO, TouristAttraction>();
-            });
-            _mapper = mapperConfig.CreateMapper();
+           
+            _mapper = new DTOMapper().Config.CreateMapper();
             _testData = new TestData();
         }
 

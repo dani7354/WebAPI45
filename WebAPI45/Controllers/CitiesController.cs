@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI45.DAL;
 using WebAPI45.Model;
+using WebAPI45;
 
 namespace WebAPI45.Controllers
 {
@@ -44,7 +45,7 @@ namespace WebAPI45.Controllers
 
             City city = _unitOfWork.Cities.GetCityWithTouristAttractions(id);
             if (city == null) return BadRequest(id);
-            if(showAttractions == true)
+            if (showAttractions == true)
             {
                 return Ok(_mapper.Map<CityDTOwithAttractions>(city));
             }
@@ -53,6 +54,7 @@ namespace WebAPI45.Controllers
                 return Ok(_mapper.Map<CityDTOnoAttractions>(city));
             }
         }
+
 
         // PUT: api/Cities/5
         [HttpPut("{id}")]

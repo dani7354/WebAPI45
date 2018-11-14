@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WebAPI45.Model;
 using WebAPI45.DAL;
+using WebAPI45;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
@@ -32,15 +33,10 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseSqlite("/Users/dsp/Documents/WebAPI45/WebAPI45/webAPI.db"));
+            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("webAPI"));
 
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<CityDTOnoAttractions, City>();
-                cfg.CreateMap<CityDTOwithAttractions, City>();
-                cfg.CreateMap<TouristAttractionDTO, TouristAttraction>();
-            });
-            var dtoMapper = mapperConfig.CreateMapper();
+
+            var dtoMapper = new DTOMapper().Config.CreateMapper();
             services.AddSingleton(dtoMapper);
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

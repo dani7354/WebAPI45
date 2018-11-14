@@ -22,4 +22,7 @@
   <ItemGroup>
     <Compile Remove="Controllers\ValuesController.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="webAPI.db" />
+  </ItemGroup>
 </Project>

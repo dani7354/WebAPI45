@@ -4,7 +4,7 @@ using WebAPI45.Controllers;
 using APITest.Mock;
 using AutoMapper;
 using WebAPI45.Model;
-
+using WebAPI45;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Web;
@@ -21,13 +21,8 @@ namespace APITest
 
         public CitiesControllerShould()
         {
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<CityDTOnoAttractions, City>();
-                cfg.CreateMap<CityDTOwithAttractions, City>();
-                cfg.CreateMap<TouristAttractionDTO, TouristAttraction>();
-            });
-            _mapper = mapperConfig.CreateMapper();
+           
+            _mapper = new DTOMapper().Config.CreateMapper();
             _testData = new TestData();
 
         }
