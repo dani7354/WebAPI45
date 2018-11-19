@@ -14,6 +14,7 @@ using WebAPI45.Model;
 using WebAPI45.DAL;
 using WebAPI45;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -26,7 +27,7 @@ namespace WebAPI45
         {
             Configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
-             //   .AddJsonFile(env.ContentRootPath + "/connectionStrings.json")
+                .AddJsonFile(env.ContentRootPath + "/appsettings.json")
                 .Build();
         }
 
@@ -35,7 +36,7 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("citiesAndTA"));
+            services.AddDbContext<CityDataContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
 
             var dtoMapper = new DTOMapper().Config.CreateMapper();
