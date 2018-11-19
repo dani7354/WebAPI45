@@ -13,6 +13,7 @@ using WebAPI45.DAL;
 
 namespace WebAPI45.Controllers
 {
+    [Produces("application/xml", "application/json")]
     [Route("api/attractions")]
     [ApiController]
     public class AttractionsController : ControllerBase
@@ -26,10 +27,13 @@ namespace WebAPI45.Controllers
             _mapper = mapper;
         }
         // GET: api/<controller>
-        [HttpGet]
+        [HttpGet("")]
         public  IActionResult Get()
         {
-            return Ok(_unitOfWork.TouristAttractions.GetAll().Select(t => _mapper.Map<TouristAttractionDTO>(t)));
+            var attractions = _unitOfWork.TouristAttractions.GetAll();
+            var attractionsDTOs = attractions.Select(a => _mapper.Map<TouristAttractionDTO>(a));
+
+            return Ok(attractionsDTOs);
         }
 
         // GET api/<controller>/5
@@ -38,6 +42,16 @@ namespace WebAPI45.Controllers
         {
             var touristAttraction = _unitOfWork.TouristAttractions.Get(id);
             return touristAttraction == null ? NotFound(id) : (IActionResult)Ok(_mapper.Map<TouristAttractionDTO>(touristAttraction));
+        }
+        [HttpGet("~/api/cities/{cityId}/attractions")]
+        public IActionResult GetAttractionsByCityId(int cityId)
+        {
+            var city = _unitOfWork.Cities.GetCityWithTouristAttractions(cityId);
+            if (city == null) return NotFound(cityId);
+
+            var attractions = city.Attractions.Select(t => _mapper.Map<TouristAttractionDTO>(t));
+            if ( attractions == null) return NotFound(cityId);
+            return Ok(attractions);
         }
 
         // POST api/<controller>
@@ -51,7 +65,7 @@ namespace WebAPI45.Controllers
             var city = _unitOfWork.Cities.GetCityWithTouristAttractions(cityId);
             if (city == null)
             {
-                return NotFound(city);
+                return BadRequest(city);
             }
             TouristAttraction attraction = _mapper.Map<TouristAttraction>(touristAttraction);
             city.Attractions.Add(attraction);
@@ -65,11 +79,7 @@ namespace WebAPI45.Controllers
         [HttpPut("{id}")]
         public IActionResult Put([FromRoute]int id, [FromBody]TouristAttractionDTO attractionDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            if (id != attractionDto.Id)
+            if (!ModelState.IsValid || id != attractionDto.Id)
             {
                 return BadRequest();
             }
@@ -115,11 +125,9 @@ namespace WebAPI45.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if (!_unitOfWork.TouristAttractions.Exists(id))
-            {
-                return BadRequest(id);
-            }
+        
             var attraction = _unitOfWork.TouristAttractions.Get(id);
+            if (attraction == null) return BadRequest(id);
             _unitOfWork.TouristAttractions.Remove(attraction);
             _unitOfWork.Complete();
 

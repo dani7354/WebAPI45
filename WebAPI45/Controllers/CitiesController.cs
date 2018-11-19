@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI45.DAL;
 using WebAPI45.Model;
+using WebAPI45;
 
 namespace WebAPI45.Controllers
 {
+    [Produces("application/xml", "application/json")]
     [Route("api/Cities")]
     [ApiController]
     public class CitiesController : ControllerBase
@@ -26,7 +28,8 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities
-        [HttpGet]
+      
+        [HttpGet("")]
         public IActionResult GetCities([FromQuery] bool showAttractions)
         {
             return showAttractions == true
@@ -44,7 +47,7 @@ namespace WebAPI45.Controllers
 
             City city = _unitOfWork.Cities.GetCityWithTouristAttractions(id);
             if (city == null) return BadRequest(id);
-            if(showAttractions == true)
+            if (showAttractions == true)
             {
                 return Ok(_mapper.Map<CityDTOwithAttractions>(city));
             }
@@ -53,6 +56,7 @@ namespace WebAPI45.Controllers
                 return Ok(_mapper.Map<CityDTOnoAttractions>(city));
             }
         }
+
 
         // PUT: api/Cities/5
         [HttpPut("{id}")]
@@ -66,6 +70,7 @@ namespace WebAPI45.Controllers
             {
                 return BadRequest(id);
             }
+
 
             City city = _mapper.Map<City>(cityDTO);
                 try
