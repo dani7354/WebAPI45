@@ -13,6 +13,7 @@ using WebAPI45;
 
 namespace WebAPI45.Controllers
 {
+    [Produces("application/xml", "application/json")]
     [Route("api/Cities")]
     [ApiController]
     public class CitiesController : ControllerBase
@@ -27,7 +28,8 @@ namespace WebAPI45.Controllers
         }
 
         // GET: api/Cities
-        [HttpGet]
+      
+        [HttpGet("")]
         public IActionResult GetCities([FromQuery] bool showAttractions)
         {
             return showAttractions == true

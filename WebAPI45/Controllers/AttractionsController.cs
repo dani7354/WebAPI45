@@ -13,6 +13,7 @@ using WebAPI45.DAL;
 
 namespace WebAPI45.Controllers
 {
+    [Produces("application/xml", "application/json")]
     [Route("api/attractions")]
     [ApiController]
     public class AttractionsController : ControllerBase
@@ -26,10 +27,13 @@ namespace WebAPI45.Controllers
             _mapper = mapper;
         }
         // GET: api/<controller>
-        [HttpGet]
+        [HttpGet("")]
         public  IActionResult Get()
         {
-            return Ok(_unitOfWork.TouristAttractions.GetAll().Select(t => _mapper.Map<TouristAttractionDTO>(t)));
+            var attractions = _unitOfWork.TouristAttractions.GetAll();
+            var attractionsDTOs = attractions.Select(a => _mapper.Map<TouristAttractionDTO>(a));
+
+            return Ok(attractionsDTOs);
         }
 
         // GET api/<controller>/5
@@ -121,11 +125,9 @@ namespace WebAPI45.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            if (!_unitOfWork.TouristAttractions.Exists(id))
-            {
-                return BadRequest(id);
-            }
+        
             var attraction = _unitOfWork.TouristAttractions.Get(id);
+            if (attraction == null) return BadRequest(id);
             _unitOfWork.TouristAttractions.Remove(attraction);
             _unitOfWork.Complete();
 

@@ -13,8 +13,10 @@ using WebAPI45.Model;
 using WebAPI45.DAL;
 using WebAPI45;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace WebAPI45
 {
@@ -33,21 +35,22 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("webAPI"));
+            services.AddDbContext<CityDataContext>(options => options.UseMySQL("Server=localhost;Port=8889;Database=webAPI;Uid=mamp;Pwd=mamp123;"));
 
 
             var dtoMapper = new DTOMapper().Config.CreateMapper();
             services.AddSingleton(dtoMapper);
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1" }));
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1"}));
 
             services.AddMvc(options =>
             {
-                options.RespectBrowserAcceptHeader = true;
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-            .AddXmlSerializerFormatters();
-            
+                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+
 
         }
 
@@ -59,7 +62,7 @@ namespace WebAPI45
                 app.UseDeveloperExceptionPage();
             }
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cities API"));
+            app.UseSwaggerUI(c =>  c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cities API"));
 
             app.UseMvc();
         }
