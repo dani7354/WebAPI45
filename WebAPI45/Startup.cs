@@ -9,11 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Marvin.Cache.Headers;
 using WebAPI45.Model;
 using WebAPI45.DAL;
 using WebAPI45;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -35,7 +35,7 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseMySQL("Server=localhost;Port=8889;Database=webAPI;Uid=mamp;Pwd=mamp123;"));
+            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("citiesAndTA"));
 
 
             var dtoMapper = new DTOMapper().Config.CreateMapper();
@@ -50,6 +50,21 @@ namespace WebAPI45
 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //Cache
+            services.AddHttpCacheHeaders(
+                (expirationModelOptions) 
+              =>
+            {
+                expirationModelOptions.MaxAge = 600;
+            }, 
+            (validationModelOptions) 
+                =>
+            {
+                validationModelOptions.MustRevalidate = true;
+            });
+
+            services.AddResponseCaching();
+
 
 
         }
@@ -63,6 +78,9 @@ namespace WebAPI45
             }
             app.UseSwagger();
             app.UseSwaggerUI(c =>  c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cities API"));
+
+            app.UseResponseCaching();
+            app.UseHttpCacheHeaders();
 
             app.UseMvc();
         }
