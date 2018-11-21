@@ -19,7 +19,10 @@ using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebApplication.DataAccess;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI45
 {
@@ -38,7 +41,7 @@ namespace WebAPI45
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CityDataContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<CityDataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<IdentityDataContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -54,6 +57,17 @@ namespace WebAPI45
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<IdentityDataContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidIssuer = " http://localhost/",
+                    ValidAudience = "http://localhost/",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ALONGKEY234254ADFGFGHDFGGHADFAHGJGFHERYRTHSCHKLÆOOÆSDFZCXZCTREYUYOIUOPIOUKTBEGVRFEREQRERWTERTYTRUUJFGNFG")),
+                    ValidateLifetime = true
+                };
+            });
 
 
             services.AddMvc(options =>
@@ -74,7 +88,7 @@ namespace WebAPI45
             {
                 validationModelOptions.MustRevalidate = true;
             });
-
+          
             services.AddResponseCaching();
 
 
@@ -93,6 +107,9 @@ namespace WebAPI45
 
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
+            app.UseIdentity();
+            app.UseAuthentication();
+
 
             app.UseMvc();
         }

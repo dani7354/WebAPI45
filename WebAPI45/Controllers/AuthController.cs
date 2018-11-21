@@ -45,7 +45,6 @@ namespace WebAPI45.Controllers
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Login error!");
                 return BadRequest();
             }
 
@@ -90,7 +89,7 @@ namespace WebAPI45.Controllers
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
                         };
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ALONGKEY"));
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ALONGKEY234254ADFGFGHDFGGHADFAHGJGFHERYRTHSCHKLÆOOÆSDFZCXZCTREYUYOIUOPIOUKTBEGVRFEREQRERWTERTYTRUUJFGNFG"));
                         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                         var token = new JwtSecurityToken(

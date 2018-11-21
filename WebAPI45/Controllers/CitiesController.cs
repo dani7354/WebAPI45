@@ -10,12 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using WebAPI45.DAL;
 using WebAPI45.Model;
 using WebAPI45;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI45.Controllers
 {
     [Produces("application/xml", "application/json")]
     [Route("api/Cities")]
     [ApiController]
+    [Authorize]
     public class CitiesController : ControllerBase
     {
         readonly IUnitOfWork _unitOfWork;
