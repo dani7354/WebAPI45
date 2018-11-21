@@ -18,6 +18,8 @@ using MySql.Data.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Identity;
+using WebApplication.DataAccess;
 
 namespace WebAPI45
 {
@@ -37,6 +39,10 @@ namespace WebAPI45
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CityDataContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<IdentityDataContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
 
 
             var dtoMapper = new DTOMapper().Config.CreateMapper();
@@ -44,6 +50,11 @@ namespace WebAPI45
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info() { Title = "Cities API", Version = "v1"}));
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<IdentityDataContext>()
+                .AddDefaultTokenProviders();
+
 
             services.AddMvc(options =>
             {
