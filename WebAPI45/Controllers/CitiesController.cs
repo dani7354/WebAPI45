@@ -17,7 +17,7 @@ namespace WebAPI45.Controllers
     [Produces("application/xml", "application/json")]
     [Route("api/Cities")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class CitiesController : ControllerBase
     {
         readonly IUnitOfWork _unitOfWork;
