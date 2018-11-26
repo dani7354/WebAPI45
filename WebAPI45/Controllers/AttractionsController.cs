@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI45.Model;
 using WebAPI45.DAL;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,6 +17,7 @@ namespace WebAPI45.Controllers
     [Produces("application/xml", "application/json")]
     [Route("api/attractions")]
     [ApiController]
+    [Authorize]
     public class AttractionsController : ControllerBase
     {
         readonly IUnitOfWork _unitOfWork;

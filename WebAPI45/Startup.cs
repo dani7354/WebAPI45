@@ -107,7 +107,7 @@ namespace WebAPI45
 
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
-            app.UseIdentity();
+            
             app.UseAuthentication();
 
 
